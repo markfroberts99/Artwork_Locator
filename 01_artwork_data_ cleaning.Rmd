@@ -1,0 +1,138 @@
+---
+title: "01_reformat_art_data"
+author: "Mark Roberts"
+date: "9/10/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+
+art <- read_excel('/Users/markroberts/Desktop/Effervescent Ideas/Art/art.xlsx')
+```
+
+```{r}
+head(art)
+```
+
+
+```{r}
+art <- art %>% select(-total)
+```
+
+```{r}
+art_long <- gather(art, museum, count,moma:mfah, factor_key=TRUE)
+head(art_long)
+```
+
+```{r}
+#creating new df with museum, coordinates
+mus <- colnames(art)[-1]
+
+```
+
+```{r}
+coords = c('40.7614° N, 73.9776° W', 
+           '40.7794° N, 73.9632° W',
+           '51.5076° N, 0.0994° W',
+           '38.8913° N, 77.0200° W',
+           '41.8796° N, 87.6237° W',
+           '52.3600° N, 4.8852° E',
+           '37.7715° N, 122.4686° W',
+           '59.9398° N, 30.3146° E',
+           '34.0780° N, 118.4741° W',
+           '39.9656° N, 75.1810° W',
+           '51.5089° N, 0.1283° W',
+           '38.8979° N, 77.0224° W',
+           '48.8643° N, 2.2978° E',
+           '37.8226° S, 144.9689° E',
+           '40.7396° N, 74.0089° W',
+           '40.4079° N, 3.6946° W',
+           '34.0639° N, 118.3592° W',
+           '42.3394° N, 71.0940° W',
+           '40.6712° N, 73.9636° W',
+           '29.7256° N, 95.3905° W'
+)
+```
+
+
+```{r}
+lats = c(40.7614, 
+           40.7794,
+           51.5076, 
+           38.8913,
+           41.8796, 
+           52.3600, 
+           37.7715,
+           59.9398, 
+           34.0780, 
+           39.9656, 
+           51.5089, 
+           38.8979, 
+           48.8643,
+           -37.8226, 
+           40.7396, 
+           40.4079, 
+           34.0639,
+           42.3394, 
+           40.6712, 
+           29.7256)
+  
+```
+
+```{r}
+longs = c(-73.9776, 
+           -73.9632,
+           -0.0994,
+          -77.0200,
+           -87.6237,
+           4.8852,
+           -122.4686,
+           30.3146,
+           -118.4741,
+           -75.1810,
+           -0.1283,
+          -77.0224,
+            2.2978,
+           144.9689,
+           -74.0089,
+          -3.6946,
+            -118.3592,
+          -71.0940,
+          -73.9636,
+          -95.3905)
+```
+
+
+```{r}
+locations <- data.frame(mus[-21], lats, longs)
+names(locations) <- c('museum', 'latitide', 'longitude')
+locations
+```
+
+
+```{r}
+art_by_locations <- merge(art_long, locations, by='museum')
+```
+
+
+```{r}
+names <-read_excel('/Users/markroberts/Desktop/Effervescent Ideas/Art/muesum_name_dict.xlsx')
+```
+
+```{r}
+art_full <- merge(art_by_locations, names, by = 'museum')
+```
+
+```{r}
+head(art_full)
+```
+
+
+
+```{r}
+write.csv(art_full, '/Users/markroberts/Desktop/Effervescent Ideas/Art/art_cleaned.csv')
+```
+
+
